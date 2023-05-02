@@ -6,16 +6,20 @@ books_bp = Blueprint ("books", __name__, url_prefix="/books")
 
 
 def validate_book(book_id):
+    print('this is book id', book_id)
     
     try:
         book_id = int(book_id)
     except:
-        abort(make_response({"message":f"Book {book_id} invalid"},400))
+        print("it,did what it needed to do")
+        abort(make_response(jsonify({"message":f"Book {book_id} invalid"}),400))
+        #abort(make_response({"message":f"Book {book_id} invalid"},400))
 
     book = Book.query.get(book_id)
 
     if not book:
-        abort(make_response({"message":f"Book {book_id} not found"}, 404))
+        abort(make_response({"message":f"Book {book_id} not found"},404))
+        
 
     return book
 
@@ -25,24 +29,19 @@ def validate_book(book_id):
 def read_all_books():
 
     title_query = request.args.get("title")
-    if title_query:
 
+    if title_query:
         books = Book.query.filter_by(title=title_query)
+        
     else: 
     
         books = Book.query.all()
-
-
+    
     books_response = []
     for book in books: 
-        books_response.append({
-            "id": book.id,
-            "title": book.title,
-            "description": book.description
-        })
+        books_response.append(book.to_dict())
     
-    return jsonify (books_response), 200
-    #return make_response ("Im a teapot"), 418
+    return make_response(jsonify (books_response), 200)
 
 @books_bp.route("", methods=["POST"])
 
@@ -55,7 +54,7 @@ def create_book():
     db.session.add(new_book)
     db.session.commit()
 
-    return make_response (jsonify(f"Book {new_book.title} succesfully created"),201)
+    return make_response (jsonify(f"Book {new_book.title} successfully created"),201)
 
 
 @books_bp.route("/<book_id>" , methods= ["GET"])
@@ -64,16 +63,10 @@ def handle_book (book_id):
 
     book = validate_book(book_id)
 
-    #Think this is from past waves
-
     if book == None:
         return make_response("", status=404)
     else:
-        return {
-            "id": book.id,
-            "title": book.title,
-            "description": book.description
-        }
+        return book.to_dict()
 
 @books_bp.route("/<book_id>" , methods= ["PUT"])
 
@@ -97,7 +90,7 @@ def delete_book(book_id):
     db.session.delete(book)
     db.session.commit()
 
-    return make_response(jsonify(f"Book #{book.id} succesfully deleted",200))
+    return make_response(jsonify(f"Book #{book.id} successfully deleted",200))
 
 
     
