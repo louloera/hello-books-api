@@ -1,4 +1,4 @@
-"""empty message
+"""Create Author table and relate it to Book
 
 Revision ID: a439f5249915
 Revises: 5a2ae0a64caf
