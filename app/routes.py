@@ -15,7 +15,7 @@ def validate_book(cls, book_id):
         book_id = int(book_id)
     except:
         abort(make_response(jsonify({"message":f"{cls.__name__} {book_id} invalid"}),400))
-        #abort(make_response({"message":f"Book {book_id} invalid"},400))
+        #abort(make_response({"messag   e":f"Book {book_id} invalid"},400))
 
     book = cls.query.get(book_id)
 
